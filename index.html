@@ -1,83 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Linux Terminal Demo</title>
-  <style>
-    body {
-      background-color: #000;
-      color: #33ff33;
-      font-family: monospace;
-      padding: 20px;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linux: Powering the World</title>
+<style>
+  /* --- General Reset & Styling --- */
+  body, html {
+    margin: 0; padding: 0; height: 100%; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0b0c0f;
+    color: #c9d1d9;
+    scroll-behavior: smooth;
+  }
 
-    #terminal {
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
+  /* --- Container --- */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+  }
 
-    .prompt {
-      color: #33ff33;
-    }
+  /* --- Headers --- */
+  h1, h2, h3 {
+    color: #2ecc71;
+    font-weight: 700;
+  }
+  h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 0 0 12px #2ecc71cc;
+  }
+  h2 {
+    font-size: 2.25rem;
+    margin: 30px 0 20px;
+    border-left: 6px solid #2ecc71;
+    padding-left: 14px;
+    text-shadow: 0 0 6px #2ecc71bb;
+  }
+  h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
 
-    .input-line {
-      display: flex;
+  /* --- Paragraphs --- */
+  p {
+    font-size: 1.1rem;
+    line-height: 1.5;
+    max-width: 900px;
+    margin-bottom: 20px;
+    color: #d0d6db;
+  }
+
+  /* --- Section styling --- */
+  section {
+    margin-bottom: 60px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 1s forwards;
+  }
+  section:nth-child(odd) {
+    animation-delay: 0.3s;
+  }
+  section:nth-child(even) {
+    animation-delay: 0.6s;
+  }
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* --- Navbar (fake, for quick jump) --- */
+  nav {
+    position: sticky;
+    top: 0;
+    background: #111;
+    border-bottom: 2px solid #2ecc71;
+    padding: 12px 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+  }
+  nav a {
+    color: #2ecc71;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 0 20px;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+  nav a:hover {
+    color: #55ff8a;
+  }
+
+  /* --- Header Section --- */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header img {
+    width: 200px;
+    filter: drop-shadow(0 0 12px #2ecc71);
+  }
+  .header p {
+    font-style: italic;
+    color: #99ffaa;
+    font-size: 1.3rem;
+  }
+
+  /* --- Terminal styled interactive block --- */
+  .terminal-window {
+    background: #000;
+    color: #0f0;
+    font-family: monospace;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 900px;
+    margin: 30px auto;
+    box-shadow: 0 0 25px #2ecc7133;
+    overflow-wrap: break-word;
+    user-select: none;
+  }
+  .terminal-header {
+    background: #111;
+    padding: 14px 20px;
+    border-radius: 12px 12px 0 0;
+    color: #2ecc71;
+    font-weight: 700;
+    user-select: none;
+    font-size: 1.1rem;
+  }
+  .terminal-body {
+    min-height: 160px;
+    white-space: pre-wrap;
+    font-size: 1rem;
+    line-height: 1.4;
+    overflow-y: auto;
+  }
+
+  /* --- Buttons for terminal commands --- */
+  .btn-command {
+    background: #111;
+    border: 2px solid #2ecc71;
+    color: #2ecc71;
+    font-family: monospace;
+    padding: 10px 22px;
+    margin: 12px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+  .btn-command:hover {
+    background: #2ecc71;
+    color: #000;
+  }
+
+  /* --- Quiz styling --- */
+  .quiz-option {
+    background: #111;
+    border: 2px solid #2ecc71;
+    padding: 14px 18px;
+    margin: 18px auto;
+    width: 320px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .quiz-option:hover {
+    background-color: #2ecc71;
+    color: #000;
+  }
+  .quiz-result {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-top: 18px;
+    color: #2ecc71;
+    font-weight: 700;
+    user-select: none;
+  }
+
+  /* --- Timeline --- */
+  .timeline {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-left: 20px;
+    border-left: 3px solid #2ecc71;
+  }
+  .timeline-item {
+    margin: 25px 0;
+    padding-left: 20px;
+    position: relative;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 0;
+    width: 18px;
+    height: 18px;
+    background: #2ecc71;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #2ecc7177;
+  }
+  .timeline-item h3 {
+    margin: 0 0 6px;
+    color: #55ff8a;
+  }
+  .timeline-item p {
+    font-size: 1rem;
+    max-width: 700px;
+    color: #b0d3b0;
+  }
+
+  /* --- Distro grid --- */
+  .distro-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .distro {
+    background: #111;
+    border: 2px solid #2ecc71;
+    border-radius: 14px;
+    width: 160px;
+    padding: 20px;
+    text-align: center;
+    cursor: default;
+    transition: box-shadow 0.4s ease;
+    user-select: none;
+  }
+  .distro:hover {
+    box-shadow: 0 0 25px #2ecc7177;
+  }
+  .distro img {
+    max-width: 100px;
+    margin-bottom: 14px;
+  }
+  .distro h4 {
+    margin: 0;
+    color: #aaffaa;
+  }
+
+  /* --- Use cases grid --- */
+  .usecases {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .usecase {
+    background: #111;
+    border-radius: 12px;
+    border: 2px solid #2ecc71;
+    padding: 20px;
+    width: 250px;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    cursor: default;
+    user-select: none;
+  }
+  .usecase:hover {
+    background-color: #2ecc71;
+    color: #000;
+  }
+  .usecase-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    color: #55ff8a;
+  }
+  .usecase h4 {
+    margin-bottom: 10px;
+  }
+  .usecase p {
+    font-size: 1rem;
+    color: #d0d6db;
+  }
+
+  /* --- Footer --- */
+  footer {
+    text-align: center;
+    padding: 22px;
+    font-size: 0.9rem;
+    color: #55ff8a99;
+    user-select: none;
+    border-top: 2px solid #2ecc71;
+  }
+
+  /* --- Responsive --- */
+  @media screen and (max-width: 768px) {
+    .distro-grid, .usecases {
+      flex-direction: column;
       align-items: center;
     }
-
-    .blinking-cursor {
-      display: inline-block;
-      width: 10px;
-      background: #33ff33;
-      margin-left: 2px;
-      animation: blink 1s steps(1) infinite;
-      height: 1em;
+    .distro, .usecase {
+      width: 80%;
     }
-
-    @keyframes blink {
-      50% {
-        background: transparent;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div id="terminal">
-    <div>> Booting up...</div>
-  </div>
-  <script>
-    const terminal = document.getElementById("terminal");
 
-    const lines = [
-      "[ OK ] Initialized kernel modules",
-      "[ OK ] Mounted /dev",
-      "[ OK ] Mounted /proc",
-      "[ OK ] Started udev Kernel Device Manager",
-      "[ OK ] Reached target Basic System",
-      "user@linux:~$ echo 'Hello World!'",
-      "Hello World!",
-      "user@linux:~$"
-    ];
+<nav>
+  <a href="#intro">Intro</a>
+  <a href="#terminal">Terminal</a>
+  <a href="#timeline">History</a>
+  <a href="#distros">Distros</a>
+  <a href="#usecases">Uses</a>
+  <a href="#quiz">Quiz</a>
+</nav>
 
-    let i = 0;
+<div class="container">
 
-    function printLine() {
-      if (i < lines.length) {
-        const line = document.createElement("div");
-        line.textContent = lines[i++];
-        terminal.appendChild(line);
-        terminal.scrollTop = terminal.scrollHeight;
-        setTimeout(printLine, 700);
-      } else {
-        const inputLine = document.createElement("div");
-        inputLine.classList.add("input-line");
-        inputLine.innerHTML = `<span class="prompt">user@linux:~$ </span><span class="blinking-cursor"></span>`;
-        terminal.appendChild(inputLine);
-      }
-    }
+  <section id="intro" class="header" style="animation-delay: 0s;">
+    <h1>Linux: Powering the World</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Tux.svg" alt="Tux the Linux Penguin" />
+    <p><em>The open-source operating system kernel that runs everything from your phone to the world's fastest supercomputers.</em></p>
+  </section>
 
-    setTimeout(printLine, 1000);
-  </script>
-</body>
-</html>
+  <section id="terminal" style="animation-delay: 0.3s;">
+    <h2>Interactive Terminal Simulator</h2>
+    <div class="terminal-window" aria-label="Terminal simulator">
+      <div class="terminal-header">user@linux:~$</div>
+      <div class="terminal-body" id="terminalBody">
+        <div>user@linux:~$ <span id="typedText"></span><span id="cursor">█</span></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; margin-top:10px;">
+      <button class="btn-command" onclick="runCommand('neofetch')">neofetch</button>
+      <button class="btn-command" onclick="runCommand('uname -r')">uname -r</button>
+      <button class="btn-command" onclick="runCommand('lsb_release -a')">lsb_release -a</button>
+      <button class="btn-command" onclick="runCommand('help')">help</button>
+      <button class="btn-command" onclick="runCommand('clear')">clear</button>
+    </div>
+    <pre id="cmdOutput" class="terminal-window" style="min-height: 140px; margin-top: 24px;"></pre>
+  </section>
+
+  <section id="timeline" style="animation-delay: 0.6s;">
+    <h2>Linux History Timeline</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h3>1991 - Birth of Linux</h3>
+        <p>Linus Torvalds announced the Linux kernel, an open-source project that sparked a revolution in software development.</p>
+      </div>
+      <div class="timeline-item">
+        <h3>1992 - GNU/Linux</h3>
+        <p>The Linux kernel was combined with GNU tools to create a fully functional free operating system.</p>
+      </div>
+      <div class="timeline-item">
+        <h3>2004 - Ubuntu Launch</h3>
+        <p>Ubuntu, one of the most popular user-friendly Linux distributions, was released, making Linux accessible to millions.</p>
+      </div>
+      <div class="timeline-item">
+        <h3>2011 - Android Dominance</h3>
+        <p>Android, based on the Linux kernel, became the most popular smartphone OS globally.</p>
+      </div>
+      <div class="timeline-item">
+        <h3>2020 - Linux Everywhere</h3>
+        <p>Linux powers cloud servers, supercomputers, IoT devices, and even the International Space Station.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="distros" style="animation-delay: 0.9s;">
+    <h2>Popular Linux Distributions</h2>
+    <div class="distro-grid">
+      <div class="distro" title="Ubuntu: Great for beginners, user-friendly.">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/8c/Ubuntu_logo.svg" alt="Ubuntu logo" />
+        <h4>Ubuntu</h4>
+      </div>
+      <div class="distro" title="Fedora: Cutting-edge with latest tech.">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Fedora_logo.svg" alt="Fedora logo" />
+        <h4>Fedora</h4>
+      </div>
+      <div class="distro" title="Arch Linux: For advanced users who love customization.">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Archlinux-icon-crystal-64.svg" alt="Arch Linux logo" />
+        <h4>Arch Linux</h4>
+      </div>
+      <div class="distro" title="Debian: Stable and universal.">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Debian_logo.svg" alt="Debian logo" />
+        <h4>Debian</h4>
+      </div>
+      <div class="distro" title="Mint: Friendly for Windows switchers.">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Linux_Mint_Logo.svg" alt="Linux Mint logo" />
+        <h4>Linux Mint</h4>
+      </div>
+    </div>
+  </section>
+
+  <section id="usecases" style="animation-delay: 1.2s;">
+    <h2>Where is Linux Used?</h2>
+    <div class="usecases">
+      <div class="usecase" title="Servers">
+        <div class="usecase-icon" aria-label="Servers">🖥️</div>
+        <h4>Servers</h4>
+        <p>Over 70% of web servers run Linux, powering websites and cloud services worldwide.</p>
+      </div>
+      <div class="usecase" title="Smartphones">
+        <div class="usecase-icon" aria-label="Smartphones">📱</div>
+        <h4>Smartphones</h4>
+        <p>Android phones run on Linux kernel, making Linux the most used mobile OS kernel.</p>
+      </div>
+      <div class="usecase" title="Supercomputers">
+        <div class="usecase-icon" aria-label="Supercomputers">🚀</div>
+        <h4>Supercomputers</h4>
+        <p>All top 500 supercomputers run Linux, due to its power and flexibility.</p>
+      </div>
+      <div class="usecase" title="IoT Devices">
+        <div class="usecase-icon" aria-label="IoT Devices">📡</div>
+        <h4>IoT Devices</h4>
+        <p>Linux powers countless smart home and embedded devices worldwide.</p>
+      </div>
+      <div class="usecase" title="Desktops & Laptops">
+        <div class="usecase-icon" aria-label="Desktops and Laptops">💻</div>
+        <h4>Desktops & Laptops</h4>
+        <p>Linux desktop distros are used by hobbyists, programmers, and professionals alike.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="quiz" style="animation-delay: 1.5s;">
+    <h2>Test Your Linux Knowledge</h2>
+    <p>Which of these is a Linux distribution?</p>
+    <div style="text-align:center;">
+      <div class="quiz-option" onclick="checkAnswer(this)">Windows 10</div>
+      <div class="quiz-option" onclick="checkAnswer(this)">Ubuntu</div>
+      <div class="quiz-option" onclick="checkAnswer(this)">macOS</div>
+    </div>
+    <div id="quizResult" class="quiz-result" aria-live="polite"></div>
+  </section>
+
+</div>
+
+<footer>
+  Made by Grayson — Powered by Open Source &amp; Curiosity
+</footer>
+
+<script>
+  /* Terminal typing facts animation */
+  const facts = [
+    "Linux powers 100% of the world's top 500 supercomputers.",
+    "Linux kernel was created by Linus Torvalds in 1991.",
+    "Android phones run on Linux kernel.",
+    "Most web servers use Linux.",
+    "Tux the Penguin is the Linux mascot."
+  ];
+  const typedText = document.getElementById('typedText');
+  const cursor = document.getElementById('cursor');
+  let factIndex = 0, charIndex = 0;
+  let typingSpeed = 50;
+  let deleting = false;
+
+  function typeFact() {
+    if (!deleting && charIndex <= facts[factIndex].length) {
+      typedText.textContent = facts[factIndex].slice(0, charIndex++);
+      setTimeout(typeFact, typingSpeed);
+    } else if (!deleting) {
+      setTimeout(() => {
+        deleting = true;
+        setTimeout(typeFact, typingSpeed);
+      }, 1500);
+    } else if (deleting && charIndex >= 0) {
+      typedText.textContent = facts[factIndex].slice(0, charIndex--);
+      setTimeout(typeFact
