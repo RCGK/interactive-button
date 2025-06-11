@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linux Terminal Demo</title>
+<style>
+  body {
+    background: #121212;
+    color: #00ff00;
+    font-family: monospace, monospace;
+    padding: 1rem;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  #terminal {
+    flex-grow: 1;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    user-select: text;
+  }
+  #input-line {
+    display: flex;
+  }
+  #prompt {
+    padding-right: 0.5rem;
+  }
+  #command-input {
+    background: transparent;
+    border: none;
+    color: #00ff00;
+    outline: none;
+    font-family: monospace, monospace;
+    flex-grow: 1;
+  }
+</style>
+</head>
+<body>
+
+<div id="terminal"></div>
+<div id="input-line">
+  <span id="prompt">user@linux:~$</span>
+  <input type="text" id="command-input" autofocus autocomplete="off" spellcheck="false" />
+</div>
+
+<script>
+  const terminal = document.getElementById('terminal');
+  const input = document.getElementById('command-input');
+  const promptText = 'user@linux:~$ ';
+
+  // Basic commands and responses
+  const commands = {
+    help: () => `Available commands:\nhelp - Show this help message\necho [text] - Print text\nclear - Clear the terminal\ndate - Show current date\nwhoami - Show user info`,
+    clear: () => {
+      terminal.textContent = '';
+      return '';
+    },
+    date: () => new Date().toString(),
+    whoami: () => 'user',
+  };
+
+  // Print a line to terminal
+  function printLine(text = '') {
+    terminal.textContent += text + '\n';
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  // Process command input
+  function processCommand(inputText) {
+    if (!inputText.trim()) return;
+    printLine(promptText + inputText);
+
+    const [cmd, ...args] = inputText.trim().split(' ');
+    if (cmd === 'echo') {
+      printLine(args.join(' '));
+    } else if (commands[cmd]) {
+      const result = commands[cmd]();
+      if(result) printLine(result);
+    } else {
+      printLine(`bash: ${cmd}: command not found`);
+    }
+  }
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      processCommand(input.value);
+      input.value = '';
+    }
+  });
+
+  // Initial welcome message
+  printLine('Welcome to the Linux terminal demo! Type "help" for commands.');
+</script>
+
+</body>
+</html>
